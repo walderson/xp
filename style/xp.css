@@ -1,0 +1,59 @@
+﻿a {
+  color: #369;
+}
+a:link {
+  text-decoration: none;
+}
+a:visited {
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+a:active {
+  text-decoration: underline;
+}
+
+body {
+  color: #369;
+  font-family: Verdana, Helvetica, Arial, Sans-serif;
+  font-size: 14px;
+}
+
+input[type="button"],[type="reset"],[type="submit"] {
+  background-color: #369;
+  border-top: #003366 1pt solid;
+  border-right: #003366 1pt solid;
+  border-bottom: #003366 1pt solid;
+  border-left: #003366 1pt solid;
+  color: #fff;
+  font-weight: bold;
+}
+
+h1 {
+  color: #fff;
+  font-size: 30px;
+  text-shadow: 2px 0 0 #369, -2px 0 0 #369, 0 2px 0 #369, 0 -2px 0 #369, 1px 1px #369, -1px -1px 0 #369, 1px -1px 0 #369, -1px 1px 0 #369;
+}
+
+h2 {
+  color: #fff;
+  font-size: 24px;
+  text-shadow: 2px 0 0 #369, -2px 0 0 #369, 0 2px 0 #369, 0 -2px 0 #369, 1px 1px #369, -1px -1px 0 #369, 1px -1px 0 #369, -1px 1px 0 #369;
+}
+
+h3 {
+  color: #fff;
+  font-size: 20px;
+  text-shadow: 2px 0 0 #369, -2px 0 0 #369, 0 2px 0 #369, 0 -2px 0 #369, 1px 1px #369, -1px -1px 0 #369, 1px -1px 0 #369, -1px 1px 0 #369;
+}
+
+tr.pesquisa:nth-child(even) {background-color: #e0e0e0;}
+tr.pesquisa:hover {background-color: #c0c0c0; color: #ffffff;}
+table.avaliacao {
+  border-collapse: collapse;
+}
+table.avaliacao, th.avaliacao, td.avaliacao {
+  border: 1px solid black;
+  text-align: left;
+}
