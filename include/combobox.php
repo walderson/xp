@@ -1,6 +1,10 @@
 ﻿<?php
 function combobox($name, $conn, $table, $id, $value, $selectedId, $required) {
-  $stmt = $conn->prepare("SELECT id, hash, $id, $value FROM xp.$table where ativo = 1 order by $id");
+  $sql = "SELECT id, hash, $id, $value FROM xp.$table WHERE ativo = 1 ";
+  // Não exibe o usuário Administrador
+  if ($table == "usuario") $sql .= "AND id <> 1 ";
+  $sql .= "ORDER BY $id";
+  $stmt = $conn->prepare($sql);
   $stmt->execute();
   $result = $stmt->get_result();
 

@@ -8,7 +8,7 @@ include 'include/menu.php';
 <form name="frm" action="?operacao=pesquisarAvaliacao" method="POST">
 <table border="0" width="1000">
   <tr>
-    <th colspan="4"><h2>Pesquisar Avaliação</h2></th>
+    <th colspan="5"><h2>Pesquisar Avaliação</h2></th>
   </tr>
   <tr>
     <td width="140">
@@ -51,17 +51,33 @@ include 'include/menu.php';
     $colaborador = "";
   }
 ?>
-      <input type="text" name="colaborador" maxlength="100" list="colaboradores" pattern="^[\S]+( [\S]+)*$"
+      <input type="text" name="colaborador" autocomplete="off" maxlength="100" list="colaboradores" pattern="^[\S]+( [\S]+)*$"
              placeholder="Entre com o Nome do Colaborador" size="35" title="Sem espaços em branco no começo ou no fim."
              value="<?php echo $colaborador; ?>">
 <?php datalist("colaboradores", $conn, "usuario", "nome", true); ?>
     </td>
-    <td style="vertical-align: bottom" width="300">
+    <td width="150">
+<?php
+  if (isset($_POST["status"])) {
+    $status = $_POST["status"];
+  } else {
+    $status = "";
+  }
+?>
+      <strong>Status:</strong><br/>
+      <select name="status">
+        <option value="">-- Selecione --</option>
+        <option value="P" title="Aguardando autoavaliação do colaborador."<?php echo $status == "P" ? " selected" : ""; ?>>Pendente</option>
+        <option value="N" title="Aguardando revisão da autoavaliação."<?php echo $status == "N" ? " selected" : ""; ?>>Não Revisada</option>
+        <option value="F" title="Autoavaliação finalizada."<?php echo $status == "F" ? " selected" : ""; ?>>Finalizada</option>
+      </select>
+    </td>
+    <td style="vertical-align: bottom" width="150">
       <input type="submit" name="acao" value="   Pesquisar   ">
     </td>
   </tr>
   <tr>
-    <td colspan="4" style="text-align:center;">&nbsp;</td>
+    <td colspan="5" style="text-align:center;">&nbsp;</td>
   </tr>
 </table>
 </form>
@@ -101,6 +117,9 @@ if (isset($_POST["acao"])) {
     $sql .= "and u.nome like ? ";
     $colaborador = "%" . $_POST["colaborador"] . "%";
   }
+  if ($status == "P") $sql .= "and a.data_avaliacao IS NULL ";
+  if ($status == "N") $sql .= "and a.data_avaliacao IS NOT NULL AND a.data_revisao IS NULL ";
+  if ($status == "F") $sql .= "and a.data_avaliacao IS NOT NULL AND a.data_revisao IS NOT NULL ";
   $sql .= "ORDER BY a.trimestre, uo.sigla, u.nome";
   $stmt = $conn->prepare($sql);
   if ($trimestre != "")
