@@ -14,6 +14,7 @@ if (isset($_GET["id"]) && $_GET["id"] != null) {
   if ($msgErro != "") {
     include 'include/alterarUO.php';
   } else {
+    $id = getId($conn, "uo", $_GET["id"]);
     $sigla = $_POST["sigla"];
     $nome = $_POST["nome"];
     $ativo = $_POST["ativo"];
@@ -23,19 +24,39 @@ if (isset($_GET["id"]) && $_GET["id"] != null) {
       $uoSuperior = getId($conn, "uo", $_POST["uoSuperior"]);
     }
 
-    $stmt = $conn->prepare("UPDATE xp.uo
-      SET uo_id = ?, sigla = ?, nome = ?, ativo = ?
-      WHERE hash = ?");
-    $stmt->bind_param('issis', $uoSuperior, $sigla, $nome, $ativo, $_GET["id"]);
-    if ($stmt->execute())
-      $msg = "Unidade Organizacional alterada com sucesso!";
-    else
-      $msgErro = "Erro ao alterar Unidade Organizacional: " . htmlspecialchars($stmt->error);
+    if (!possuiReferenciaCiclica($conn, $id, $uoSuperior)) {
+      $stmt = $conn->prepare("UPDATE xp.uo
+        SET uo_id = ?, sigla = ?, nome = ?, ativo = ?
+        WHERE id = ?");
+      $stmt->bind_param('issii', $uoSuperior, $sigla, $nome, $ativo, $id);
+      if ($stmt->execute())
+        $msg = "Unidade Organizacional alterada com sucesso!";
+      else
+        $msgErro = "Erro ao alterar Unidade Organizacional: " . htmlspecialchars($stmt->error);
 
-    include 'include/mensagem.php';
+      include 'include/mensagem.php';
+    } else {
+      $msgErro = "Erro: Referência cíclica não permitida.";
+      include 'include/alterarUO.php';
+    }
   }
 } else {
   $msgErro = "Erro: Identificador do registro não informado.";
   include 'include/mensagem.php';
+}
+
+function possuiReferenciaCiclica($conn, $id, $uoId) {
+  if ($uoId == null) return false;
+  if ($id == $uoId) return true;
+  $sql = "SELECT id, uo_id
+          FROM
+            xp.uo
+          WHERE id = ?";
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param('i', $uoId);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  $row = $result->fetch_assoc();
+  return possuiReferenciaCiclica($conn, $id, $row["uo_id"]);
 }
 ?>

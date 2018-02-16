@@ -1,7 +1,7 @@
 ﻿<?php
 $titulo = "Alterar Unidade Organizacional";
 $msg = "";
-$msgErro = "";
+if (!isset($msgErro)) $msgErro = "";
 
 if (isset($_GET["id"]) && $_GET["id"] != null) {
   $hash = $_GET["id"];
@@ -17,6 +17,20 @@ if (isset($_GET["id"]) && $_GET["id"] != null) {
   $result = $stmt->get_result();
   if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
+    if ($msgErro != "") {
+      $uoSuperior = NULL;
+      if (isset($_POST["uoSuperior"]) && ($_POST["uoSuperior"] != "")) {
+        $uoSuperior = getId($conn, "uo", $_POST["uoSuperior"]);
+      }
+      $sigla = $_POST["sigla"];
+      $nome = $_POST["nome"];
+      $ativo = $_POST["ativo"];
+    } else {
+      $uoSuperior = $row["uo_id"];
+      $sigla = $row["sigla"];
+      $nome = $row["nome"];
+      $ativo = $row["ativo"];
+	}
 ?>
 <table border="0" width="1200">
   <tr>
@@ -33,7 +47,7 @@ include 'include/menu.php';
   <tr>
     <td colspan="3">
       <strong>Unidade Organizacional Superior:</strong><br/>
-      <?php combobox("uoSuperior", $conn, "uo", "sigla", "nome", $row["uo_id"], false); ?>
+      <?php combobox("uoSuperior", $conn, "uo", "sigla", "nome", $uoSuperior, false); ?>
     </td>
   </tr>
   <tr>
@@ -44,18 +58,18 @@ include 'include/menu.php';
       <strong>Sigla:*</strong><br/>
       <input type="text" name="sigla" maxlength="32" pattern="[A-Za-z]+" placeholder="Entre com a Sigla"
              required size="20" style="text-transform: uppercase;"
-             title="Somente letras." value="<?php echo $row["sigla"]; ?>">
+             title="Somente letras." value="<?php echo $sigla; ?>">
     </td>
     <td width="500">
       <strong>Nome:*</strong><br/>
       <input type="text" name="nome" maxlength="100" pattern="^[\S]+( [\S]+)*$" placeholder="Entre com o Nome"
              required size="50" title="Sem espaços em branco no começo ou no fim."
-             value="<?php echo $row["nome"]; ?>">
+             value="<?php echo $nome; ?>">
     </td>
     <td width="250">
       <strong>Ativo:</strong><br/>
-      <input type="radio" name="ativo" required value="1"<?php if ($row["ativo"] == 1) echo " checked"; ?>> Sim
-      <input type="radio" name="ativo" required value="0"<?php if ($row["ativo"] == 0) echo " checked"; ?>> Não
+      <input type="radio" name="ativo" required value="1"<?php if ($ativo == 1) echo " checked"; ?>> Sim
+      <input type="radio" name="ativo" required value="0"<?php if ($ativo == 0) echo " checked"; ?>> Não
     </td>
   </tr>
   <tr>

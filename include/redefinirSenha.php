@@ -1,7 +1,7 @@
 ﻿<?php
 $titulo = "Redefinir Senha";
 $msg = "";
-$msgErro = "";
+if (!isset($msgErro)) $msgErro = "";
 
 if (isset($_GET["id"]) && $_GET["id"] != null) {
   $hash = $_GET["id"];
