@@ -29,7 +29,7 @@ include 'include/menu.php';
   </tr>
   <tr>
     <td>
-<?php estrutura($conn, null, $exibirUOInativas); ?>
+<?php estrutura($conn, null, $exibirUOInativas, 0); ?>
     </td>
   </tr>
 </table>
@@ -82,11 +82,12 @@ ul li::after {
 }
 </style>
 <?php
-function estrutura($conn, $id, $exibirUOInativas) {
+function estrutura($conn, $id, $exibirUOInativas, $qtdc) {
   $sql = "SELECT 
     uo.id, uo.sigla, uo.nome, uo.ativo,
     (SELECT COUNT(id) FROM xp.usuario u WHERE u.id <> 1 AND u.uo_id = uo.id AND u.ativo = 1) qtdu,
-    (SELECT COUNT(id) FROM xp.competencia c WHERE c.uo_id = uo.id AND c.ativo = 1) qtdc
+    (SELECT COUNT(id) FROM xp.competencia c WHERE c.uo_id = uo.id AND c.ativo = 1) qtdc,
+    (SELECT COUNT(id) FROM xp.competencia cr WHERE cr.uo_id = uo.id AND cr.ativo = 1 AND cr.replicar = 1) qtdr
     FROM xp.uo uo
     WHERE 1 = 1 ";
   if (!$exibirUOInativas) $sql .= "AND uo.ativo = 1 ";
@@ -109,12 +110,18 @@ function estrutura($conn, $id, $exibirUOInativas) {
 <ul>
 <?php
     while ($row = $result->fetch_assoc()) {
+      if ($qtdc == 1)
+		$qtdr = " +" . $qtdc . " replicada";
+	  else if ($qtdc > 1)
+		$qtdr = " +" . $qtdc . " replicadas";
+	  else
+		$qtdr = "";
 ?>
   <li>
     <div style="<?php echo $row["ativo"] == 0 ? "color: red; " : "" ; ?>"
-         title="<?php echo $row["sigla"]; ?> - Colaboradores: <?php echo $row["qtdu"]; ?>; Competências: <?php echo $row["qtdc"]; ?>">
+         title="<?php echo $row["sigla"]; ?> - Colaboradores: <?php echo $row["qtdu"]; ?>; Competências: <?php echo $row["qtdc"]; ?><?php echo $qtdr; ?>">
       <?php echo $row["sigla"]; ?> - <?php echo $row["nome"]; ?></div>
-<?php estrutura($conn, $row["id"], $exibirUOInativas); ?>
+<?php estrutura($conn, $row["id"], $exibirUOInativas, ($qtdc + $row["qtdr"])); ?>
   </li>
 <?php
     }

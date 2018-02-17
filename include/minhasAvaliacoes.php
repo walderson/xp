@@ -54,8 +54,8 @@ include 'include/menu.php';
       <?php } ?>
     </td>
     <td style="text-align: center;"><?php echo date('d/m/Y', strtotime($row["data_limite"])); ?></td>
-    <td style="text-align: center;"><?php echo date('d/m/Y H:i:s', strtotime($row["data_avaliacao"])); ?></td>
-    <td style="text-align: center;"><?php echo date('d/m/Y H:i:s', strtotime($row["data_revisao"])); ?></td>
+    <td style="text-align: center;"><?php echo $row["data_avaliacao"] != null ? date('d/m/Y H:i:s', strtotime($row["data_avaliacao"])) : ""; ?></td>
+    <td style="text-align: center;"><?php echo $row["data_revisao"] != null ? date('d/m/Y H:i:s', strtotime($row["data_revisao"])) : ""; ?></td>
     <td style="text-align: center;">
       <a href="?operacao=avaliacao&id=<?php echo $row["hash"]; ?>"><?php echo $row["hash"]; ?></a>
     </td>
