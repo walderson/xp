@@ -20,10 +20,11 @@ include 'include/menu.php';
     <th style="background-color: #336699; color: #ffffff;" width="300">Link para Avaliação</th>
   </tr>
 <?php
-  $sql = "SELECT a.hash, a.trimestre, a.data_limite, a.data_avaliacao, a.data_revisao
+  $sql = "SELECT a.hash, a.trimestre, uo.sigla, uo.nome, a.data_limite, a.data_avaliacao, a.data_revisao
           FROM
             xp.avaliacao a
             INNER JOIN xp.usuario u ON (a.usuario_id = u.id)
+            INNER JOIN xp.uo uo ON (a.uo_id = uo.id)
           WHERE u.id = ?
 		  ORDER BY a.trimestre, a.id";
   $stmt = $conn->prepare($sql);
@@ -35,7 +36,7 @@ include 'include/menu.php';
     while ($row = $result->fetch_assoc()) {
 ?>
   <tr class="pesquisa">
-    <td style="text-align: center;">
+    <td style="text-align: center;" title="<?php echo $row["sigla"] . " - " . $row["nome"]; ?>">
       <?php echo $row["trimestre"]; ?>
       <?php if ($row["data_avaliacao"] == null) { ?>
       <?php if (strtotime(date("Y-m-d")) <= strtotime($row["data_limite"])) { ?>

@@ -27,13 +27,14 @@ if (isset($msgErro)) {
             SET redefinir_senha = NULL
             WHERE id = ?");
           $stmt->bind_param('i', $row["id"]);
-		  $stmt->execute();
-		}
+          $stmt->execute();
+        }
 
         $_SESSION['usuarioId'] = $row["id"];
         $_SESSION['login'] = $login;
         $_SESSION['usuario'] = $row["nome"];
         $_SESSION['administrador'] = $row["administrador"];
+        $_SESSION['gestor'] = buscarUOGestor($conn, $row["id"]);
         include 'include/home.php';
       } else {
         $msgErro = "Login inativo.\n\nFavor procurar o administrador.";
@@ -47,5 +48,23 @@ if (isset($msgErro)) {
     $msgErro = "Login não encontrado ou senha incorreta.\n\nTente novamente.";
     include 'include/login.php';
   }
+}
+
+function buscarUOGestor($conn, $gestorId) {
+  $array = array();
+
+  $stmt = $conn->prepare("SELECT id FROM xp.uo WHERE gestor_id = ?");
+  $stmt->bind_param('i', $gestorId);
+  $stmt->execute();
+  $result = $stmt->get_result();
+
+  if ($result->num_rows > 0) {
+    $i = 0;
+    while ($row = $result->fetch_assoc()) {
+      $array[$i++] = $row["id"];
+    }
+  }
+
+  return $array;
 }
 ?>

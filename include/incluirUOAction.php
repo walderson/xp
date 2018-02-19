@@ -16,9 +16,13 @@ if (isset($msgErro)) {
   if (isset($_POST["uoSuperior"]) && ($_POST["uoSuperior"] != "")) {
     $uoSuperior = getId($conn, "uo", $_POST["uoSuperior"]);
   }
+  $gestor = NULL;
+  if (isset($_POST["gestor"]) && ($_POST["gestor"] != "")) {
+    $gestor = getId($conn, "usuario", $_POST["gestor"]);
+  }
 
-  $stmt = $conn->prepare("INSERT INTO xp.uo(uo_id, sigla, nome) values(?, ?, ?)");
-  $stmt->bind_param('iss', $uoSuperior, $sigla, $nome);
+  $stmt = $conn->prepare("INSERT INTO xp.uo(uo_id, sigla, nome, gestor_id) values(?, ?, ?, ?)");
+  $stmt->bind_param('issi', $uoSuperior, $sigla, $nome, $gestor);
   $msg = "";
   $msgErro = "";
   if ($stmt->execute())

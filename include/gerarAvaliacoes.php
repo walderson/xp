@@ -88,9 +88,8 @@ if (isset($_POST["acao"])) {
     $sql = "SELECT a.id
             FROM
               xp.avaliacao a
-              INNER JOIN xp.usuario u ON (a.usuario_id = u.id)
             WHERE a.trimestre = ?
-              AND u.uo_id = ?";
+              AND a.uo_id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param('si', $trimestre, $uoId);
     $stmt->execute();
@@ -117,7 +116,7 @@ if (isset($_POST["acao"])) {
       if ($result->num_rows > 0) {
         $uArray = array();
         while ($row = $result->fetch_assoc()) {
-          $uArray[sizeof($uArray)] = $row["id"];
+          $uArray[count($uArray)] = $row["id"];
         }
 
         // Obtém a hierarquia de unidades organizacionais
@@ -125,10 +124,10 @@ if (isset($_POST["acao"])) {
         $uoArray = arrayUO($conn, $uoId, $uoArray);
 
         // Gera as avaliações
-        for ($i = 0; $i < sizeof($uArray); $i++) {
-          $idAvaliacao = incluirAvaliacao($conn, $trimestre, $uArray[$i], $dataLimite);
+        for ($i = 0; $i < count($uArray); $i++) {
+          $idAvaliacao = incluirAvaliacao($conn, $trimestre, $uoId, $uArray[$i], $dataLimite);
           if ($idAvaliacao != -1) {
-            for ($j = 0; $j < sizeof($uoArray); $j++) {
+            for ($j = 0; $j < count($uoArray); $j++) {
               incluirQuestoes($conn, $uoId, $uoArray[$j], $idAvaliacao);
             }
           }
@@ -148,9 +147,9 @@ if (isset($_POST["acao"])) {
             FROM
               xp.avaliacao a
               INNER JOIN xp.usuario u ON (a.usuario_id = u.id)
-              INNER JOIN xp.uo uo ON (u.uo_id = uo.id)
+              INNER JOIN xp.uo uo ON (a.uo_id = uo.id)
             WHERE a.trimestre = ?
-              AND u.uo_id = ?
+              AND a.uo_id = ?
             ORDER BY u.nome";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param('si', $trimestre, $uoId);
@@ -205,32 +204,9 @@ if (isset($_POST["acao"])) {
   </tr>
 </table>
 <?php
-function arrayUO($conn, $id, $array) {
-  if ($id != null) {
-    $sql = "SELECT id, uo_id
-            FROM
-              xp.uo
-            WHERE id = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param('i', $id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    if ($result->num_rows > 0) {
-      $row = $result->fetch_assoc();
-      // Prossegue com a recursão, somente quando não houver referência cíclica
-      if (!in_array($row["id"], $array)) {
-        $array = arrayUO($conn, $row["uo_id"], $array);
-        $ind = sizeof($array);
-        $array[$ind] = $row["id"];
-      }
-    }
-  }
-  return $array;
-}
-
-function incluirAvaliacao($conn, $trimestre, $uId, $dataLimite) {
-  $stmt = $conn->prepare("INSERT INTO xp.avaliacao(trimestre, usuario_id, data_limite) VALUES(?, ?, ?)");
-  $stmt->bind_param('sis', $trimestre, $uId, $dataLimite);
+function incluirAvaliacao($conn, $trimestre, $uoId, $uId, $dataLimite) {
+  $stmt = $conn->prepare("INSERT INTO xp.avaliacao(trimestre, uo_id, usuario_id, data_limite) VALUES(?, ?, ?, ?)");
+  $stmt->bind_param('siis', $trimestre, $uoId, $uId, $dataLimite);
   if ($stmt->execute()) return $conn->insert_id;
   else return -1;
 }

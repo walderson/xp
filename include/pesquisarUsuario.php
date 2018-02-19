@@ -82,7 +82,8 @@ if (isset($_POST["acao"])) {
     <th style="background-color: #336699; color: #ffffff;" width="80">Ação</th>
   </tr>
 <?php
-  $sql = "SELECT u.hash, u.login, u.nome, uo.sigla uo, u.administrador, u.ativo
+  $sql = "SELECT u.hash, u.login, u.nome, uo.sigla uo, u.administrador, u.ativo,
+                 (SELECT COUNT(uog.id) FROM xp.uo uog WHERE uog.gestor_id = u.id) qtduo
           FROM
             xp.usuario u
 			INNER JOIN xp.uo uo ON (u.uo_id = uo.id)
@@ -134,12 +135,14 @@ if (isset($_POST["acao"])) {
     <td>
 	  <?php if ($row["administrador"]) { ?>
 	  <img src="image/administrator.png" title="Administrador" height="16" width="16">
-	  <?php } ?>
+	  <?php } if ($row["qtduo"] > 0) { ?>
+	  <img src="image/businessman.png" title="Gestor de Unidade Organizacional" height="16" width="16">
+	  <?php }?>
 	  <?php echo $row["login"]; ?>
 	</td>
     <td><?php echo $row["nome"]; ?></td>
     <td><?php echo $row["uo"]; ?></td>
-    <td><?php echo $row["ativo"] == 1 ? "Ativo" : "Inativo"; ?></td>
+    <td style="text-align: center;"><?php echo $row["ativo"] == 1 ? "Ativo" : "Inativo"; ?></td>
     <td style="text-align: center">
       <a href="?operacao=visualizarUsuario&id=<?php echo $row["hash"]; ?>"><img src="image/magnifier.png" title="Visualizar" height="16" width="16"></a>
       <a href="?operacao=alterarUsuario&id=<?php echo $row["hash"]; ?>"><img src="image/pencil.png" title="Alterar" height="16" width="16"></a>
@@ -151,7 +154,7 @@ if (isset($_POST["acao"])) {
   } else {
 ?>
   <tr class="pesquisa">
-    <td colspan="4">Nenhum registro encontrado.</td>
+    <td colspan="5">Nenhum registro encontrado.</td>
   </tr>
 <?php
   }

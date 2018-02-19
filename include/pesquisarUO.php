@@ -95,7 +95,7 @@ if (isset($_POST["acao"])) {
   <tr class="pesquisa">
     <td><?php echo $row["sigla"]; ?></td>
     <td><?php echo $row["nome"]; ?></td>
-    <td><?php echo $row["ativo"] == 1 ? "Ativo" : "Inativo"; ?></td>
+    <td style="text-align: center;"><?php echo $row["ativo"] == 1 ? "Ativo" : "Inativo"; ?></td>
     <td style="text-align: center">
       <a href="?operacao=visualizarUO&id=<?php echo $row["hash"]; ?>"><img src="image/magnifier.png" title="Visualizar" height="16" width="16"></a>
       <a href="?operacao=alterarUO&id=<?php echo $row["hash"]; ?>"><img src="image/pencil.png" title="Alterar" height="16" width="16"></a>

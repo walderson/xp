@@ -6,7 +6,7 @@ if (!isset($msgErro)) $msgErro = "";
 if (isset($_GET["id"]) && $_GET["id"] != null) {
   $hash = $_GET["id"];
   $sql = "SELECT 
-    uo_id, uo.sigla, uo.nome, uo.ativo
+    uo_id, gestor_id, uo.sigla, uo.nome, uo.ativo
     FROM xp.uo uo
     WHERE uo.hash=?";
 
@@ -22,11 +22,16 @@ if (isset($_GET["id"]) && $_GET["id"] != null) {
       if (isset($_POST["uoSuperior"]) && ($_POST["uoSuperior"] != "")) {
         $uoSuperior = getId($conn, "uo", $_POST["uoSuperior"]);
       }
+      $gestor = NULL;
+      if (isset($_POST["gestor"]) && ($_POST["gestor"] != "")) {
+        $gestor = getId($conn, "uo", $_POST["gestor"]);
+      }
       $sigla = $_POST["sigla"];
       $nome = $_POST["nome"];
       $ativo = $_POST["ativo"];
     } else {
       $uoSuperior = $row["uo_id"];
+      $gestor = $row["gestor_id"];
       $sigla = $row["sigla"];
       $nome = $row["nome"];
       $ativo = $row["ativo"];
@@ -43,15 +48,6 @@ include 'include/menu.php';
 <table border="0" width="1000">
   <tr>
     <th colspan="3"><h2><?php echo $titulo; ?></h2></th>
-  </tr>
-  <tr>
-    <td colspan="3">
-      <strong>Unidade Organizacional Superior:</strong><br/>
-      <?php combobox("uoSuperior", $conn, "uo", "sigla", "nome", $uoSuperior, false); ?>
-    </td>
-  </tr>
-  <tr>
-    <td colspan="3" style="text-align:center;">&nbsp;</td>
   </tr>
   <tr>
     <td width="250">
@@ -76,6 +72,24 @@ include 'include/menu.php';
     <td colspan="3" style="text-align:center;">&nbsp;</td>
   </tr>
   <tr>
+    <td colspan="3">
+      <strong>Unidade Organizacional Superior:</strong><br/>
+      <?php combobox("uoSuperior", $conn, "uo", "sigla", "nome", $uoSuperior, false); ?>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="3" style="text-align:center;">&nbsp;</td>
+  </tr>
+  <tr>
+    <td colspan="2">
+      <strong>Gestor:</strong><br/>
+      <?php combobox("gestor", $conn, "usuario", "nome", "nome", $gestor, false); ?>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" style="text-align:center;">&nbsp;</td>
+  </tr>
+  <tr>
     <td colspan="3" style="text-align:center;">
 <?php
 if (isset($msgErro)) {
@@ -91,7 +105,7 @@ if (isset($msgErro)) {
 </table>
 </form>
 <script type="text/javascript">
-  document.frm.uoSuperior.focus();
+  document.frm.sigla.focus();
 
   function validaForm(frm) {
     return window.confirm("Confirma a alteração da Unidade Organizacional '" + frm.sigla.value.toUpperCase() + "'?");

@@ -84,11 +84,12 @@ ul li::after {
 <?php
 function estrutura($conn, $id, $exibirUOInativas, $qtdc) {
   $sql = "SELECT 
-    uo.id, uo.sigla, uo.nome, uo.ativo,
+    uo.id, uo.hash, uo.sigla, uo.nome, g.nome gestor, uo.ativo,
     (SELECT COUNT(id) FROM xp.usuario u WHERE u.id <> 1 AND u.uo_id = uo.id AND u.ativo = 1) qtdu,
     (SELECT COUNT(id) FROM xp.competencia c WHERE c.uo_id = uo.id AND c.ativo = 1) qtdc,
     (SELECT COUNT(id) FROM xp.competencia cr WHERE cr.uo_id = uo.id AND cr.ativo = 1 AND cr.replicar = 1) qtdr
     FROM xp.uo uo
+    LEFT JOIN xp.usuario g ON (uo.gestor_id = g.id)
     WHERE 1 = 1 ";
   if (!$exibirUOInativas) $sql .= "AND uo.ativo = 1 ";
   $sql .= "AND uo.uo_id ";
@@ -96,7 +97,7 @@ function estrutura($conn, $id, $exibirUOInativas, $qtdc) {
     $sql .= "is NULL ";
   else
     $sql .= "= ? ";
-  $sql .= "GROUP BY uo.id, uo.sigla, uo.nome, uo.ativo
+  $sql .= "GROUP BY uo.id, uo.hash, uo.sigla, uo.nome, g.nome, uo.ativo
     ORDER BY uo.sigla";
 
   $stmt = $conn->prepare($sql);
@@ -110,17 +111,22 @@ function estrutura($conn, $id, $exibirUOInativas, $qtdc) {
 <ul>
 <?php
     while ($row = $result->fetch_assoc()) {
-      if ($qtdc == 1)
-		$qtdr = " +" . $qtdc . " replicada";
-	  else if ($qtdc > 1)
-		$qtdr = " +" . $qtdc . " replicadas";
-	  else
-		$qtdr = "";
+      $uo = $row["sigla"] . " - Colaboradores: " . $row["qtdu"]
+            . "; Competências: " . ($row["qtdc"] + $qtdc);
+      if ($qtdc >= 1) {
+        $uo .= " (" . $row["qtdc"] . " +" . $qtdc . " replicada";
+        if ($qtdc > 1)
+          $uo .= "s";
+        $uo .= ")";
+      }
+      if ($row["gestor"] != null) $uo .= "
+Gestor: " . $row["gestor"];
 ?>
   <li>
     <div style="<?php echo $row["ativo"] == 0 ? "color: red; " : "" ; ?>"
-         title="<?php echo $row["sigla"]; ?> - Colaboradores: <?php echo $row["qtdu"]; ?>; Competências: <?php echo $row["qtdc"]; ?><?php echo $qtdr; ?>">
-      <?php echo $row["sigla"]; ?> - <?php echo $row["nome"]; ?></div>
+         title="<?php echo $uo; ?>">
+      <a href="?operacao=visualizarUO&id=<?php echo $row["hash"]; ?>"><?php echo $row["sigla"]; ?> - <?php echo $row["nome"]; ?></a>
+    </div>
 <?php estrutura($conn, $row["id"], $exibirUOInativas, ($qtdc + $row["qtdr"])); ?>
   </li>
 <?php

@@ -12,6 +12,7 @@
   date_default_timezone_set('America/Cuiaba');
 
   //Inclui funções reutilizadas pelos arquivos incluídos
+  include_once 'include/arrayUO.php';
   include_once 'include/combobox.php';
   include_once 'include/datalist.php';
   include_once 'include/getId.php';
@@ -108,7 +109,7 @@
               include 'include/erroAdministrador.php';
             break;
           case "visualizarUO":
-            if ($administrador)
+            if ($administrador || (isset($_SESSION['gestor']) && count($_SESSION['gestor']) > 0))
               include 'include/visualizarUO.php';
             else
               include 'include/erroAdministrador.php';
@@ -132,7 +133,7 @@
               include 'include/erroAdministrador.php';
             break;
           case "estruturaUO":
-            if ($administrador)
+            if ($administrador || (isset($_SESSION['gestor']) && count($_SESSION['gestor']) > 0))
               include 'include/estruturaUO.php';
             else
               include 'include/erroAdministrador.php';
@@ -228,7 +229,7 @@
               include 'include/erroAdministrador.php';
             break;
           case "revisarAvaliacaoAction":
-            if ($administrador)
+            if ($administrador || (isset($_SESSION['gestor']) && count($_SESSION['gestor']) > 0))
               include 'include/revisarAvaliacaoAction.php';
             else
               include 'include/erroAdministrador.php';
@@ -240,7 +241,7 @@
               include 'include/erroAdministrador.php';
             break;
           case "matrizCompetencias":
-            if ($administrador)
+            if ($administrador || (isset($_SESSION['gestor']) && count($_SESSION['gestor']) > 0))
               include 'include/matrizCompetencias.php';
             else
               include 'include/erroAdministrador.php';

@@ -68,7 +68,7 @@ if (isset($_POST["acao"])) {
           FROM
             xp.avaliacao a
             INNER JOIN xp.usuario u ON (a.usuario_id = u.id)
-            INNER JOIN xp.uo uo ON (u.uo_id = uo.id)
+            INNER JOIN xp.uo uo ON (a.uo_id = uo.id)
           WHERE 1 = 1
           AND a.trimestre < ?
           AND uo.hash = ?
@@ -84,11 +84,11 @@ if (isset($_POST["acao"])) {
     $trimestreAnt = $row["trimestre"];
 
   //Consulta avaliações que atendam aos critérios do filtro de pesquisa
-  $sql = "SELECT a.id, a.usuario_id, u.nome, a.data_limite, a.data_avaliacao, a.data_revisao
+  $sql = "SELECT uo.id uo_id, a.id, a.hash, a.usuario_id, u.nome, a.data_limite, a.data_avaliacao, a.data_revisao
           FROM
             xp.avaliacao a
             INNER JOIN xp.usuario u ON (a.usuario_id = u.id)
-            INNER JOIN xp.uo uo ON (u.uo_id = uo.id)
+            INNER JOIN xp.uo uo ON (a.uo_id = uo.id)
           WHERE 1 = 1
           AND a.trimestre = ?
           AND uo.hash = ?
@@ -130,7 +130,18 @@ if (isset($_POST["acao"])) {
       }
 ?>
   <tr class="pesquisa">
-    <td><?php echo $row["nome"]; ?>
+    <td>
+<?php
+  if (isset($_SESSION['gestor']) && in_array($row["uo_id"], $_SESSION['gestor'])) {
+?>
+      <a href="?operacao=avaliacao&id=<?php echo $row["hash"]; ?>" title="Acessar a avaliação"><?php echo $row["nome"]; ?>.</a>
+<?php
+  } else {
+?>
+      <?php echo $row["nome"]; ?>
+<?php
+  }
+?>
       <?php if ($row["data_avaliacao"] == null) { ?>
       <?php if (strtotime(date("Y-m-d")) <= strtotime($row["data_limite"])) { ?>
       <img src="image/alert-blue.png" title="Colaborador deve realizar autoavaliação até <?php echo date('d/m/Y', strtotime($row["data_limite"])); ?>." height="16" width="16">
@@ -152,12 +163,12 @@ if (isset($_POST["acao"])) {
       for ($i = 0; $i < $qtdCompetencias; $i++) {
         $sql = "SELECT ac.nivel, aca.nivel nivela
           FROM xp.avaliacao_competencia ac
-          LEFT JOIN xp.avaliacao aa ON (aa.trimestre = ? AND aa.usuario_id = ?)
+          LEFT JOIN xp.avaliacao aa ON (aa.trimestre = ? AND aa.uo_id = ? AND aa.usuario_id = ?)
           LEFT JOIN xp.avaliacao_competencia aca ON (aca.avaliacao_id = aa.id AND aca.competencia_id = ?)
           WHERE ac.avaliacao_id = ?
           AND ac.competencia_id = ?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param('siiii', $trimestreAnt, $row["usuario_id"], $competencias[$i], $row["id"], $competencias[$i]);
+        $stmt->bind_param('siiiii', $trimestreAnt, $row["uo_id"], $row["usuario_id"], $competencias[$i], $row["id"], $competencias[$i]);
         $stmt->execute();
         $rac = $stmt->get_result();
         if ($ac = $rac->fetch_assoc()) {

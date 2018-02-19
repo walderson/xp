@@ -6,7 +6,7 @@ $msgErro = "";
 if (isset($_GET["id"]) && $_GET["id"] != null) {
   $hash = $_GET["id"];
   $sql = "SELECT
-      a.data_limite, u.nome, a.data_avaliacao, a.data_revisao
+      a.uo_id, a.data_limite, u.nome, a.data_avaliacao, a.data_revisao
     FROM xp.avaliacao a
       INNER JOIN xp.usuario u on (a.usuario_id = u.id)
     WHERE a.hash=?";
@@ -73,7 +73,8 @@ if(isset($_SESSION['usuario'])) {
 </table>
 <?php
     } else {
-      if (isset($_SESSION['administrador']) && $_SESSION['administrador'] == 1)
+      if ((isset($_SESSION['administrador']) && $_SESSION['administrador'] == 1)
+          || (isset($_SESSION['gestor']) && in_array($row["uo_id"], $_SESSION['gestor']) > 0))
         if ($row["data_revisao"] == null)
           include 'include/revisarAvaliacao.php';
         else

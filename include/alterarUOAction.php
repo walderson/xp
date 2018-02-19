@@ -23,12 +23,16 @@ if (isset($_GET["id"]) && $_GET["id"] != null) {
     if (isset($_POST["uoSuperior"]) && ($_POST["uoSuperior"] != "")) {
       $uoSuperior = getId($conn, "uo", $_POST["uoSuperior"]);
     }
+    $gestor = NULL;
+    if (isset($_POST["gestor"]) && ($_POST["gestor"] != "")) {
+      $gestor = getId($conn, "usuario", $_POST["gestor"]);
+    }
 
     if (!possuiReferenciaCiclica($conn, $id, $uoSuperior)) {
       $stmt = $conn->prepare("UPDATE xp.uo
-        SET uo_id = ?, sigla = ?, nome = ?, ativo = ?
+        SET uo_id = ?, sigla = ?, nome = ?, gestor_id = ?, ativo = ?
         WHERE id = ?");
-      $stmt->bind_param('issii', $uoSuperior, $sigla, $nome, $ativo, $id);
+      $stmt->bind_param('issiii', $uoSuperior, $sigla, $nome, $gestor, $ativo, $id);
       if ($stmt->execute())
         $msg = "Unidade Organizacional alterada com sucesso!";
       else

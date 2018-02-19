@@ -5,6 +5,7 @@ $msgErro = "";
 
 if (isset($_GET["id"]) && $_GET["id"] != null) {
   $hash = $_GET["id"];
+  $id = getId($conn, "usuario", $hash);
   $sql = "SELECT
     u.login, u.nome, u.administrador, u.ativo, uo.sigla, uo.nome uo
     FROM xp.usuario u
@@ -54,10 +55,45 @@ include 'include/menu.php';
   <tr>
     <td colspan="4">
       <strong>Unidade Organizacional:</strong><br/>
-	  <?php echo $row["sigla"]; ?> - <?php echo $row["uo"]; ?>
+      <?php echo $row["sigla"]; ?> - <?php echo $row["uo"]; ?>
     </td>
   </tr>
 </table>
+
+<?php
+    $sql = "SELECT sigla, nome, ativo
+            FROM xp.uo
+            WHERE gestor_id = ?
+            ORDER BY sigla";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param('i', $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+?>
+&nbsp;<br />
+<table border="0" width="1000">
+  <tr>
+    <th style="background-color: #336699; color: #ffffff;" width="120">Sigla</th>
+    <th style="background-color: #336699; color: #ffffff;" width="800">Gestor da Unidade Organizacional</th>
+    <th style="background-color: #336699; color: #ffffff;" width="80">Situação</th>
+  </tr>
+<?php
+      while ($row = $result->fetch_assoc()) {
+?>
+  <tr class="pesquisa">
+    <td><?php echo $row["sigla"]; ?></td>
+    <td><?php echo $row["nome"]; ?></td>
+    <td style="text-align: center;"><?php echo $row["ativo"] == 1 ? "Ativo" : "Inativo"; ?></td>
+  </tr>
+<?php
+      }
+?>
+</table>
+<?php
+    }
+?>
 
     </td>
   </tr>

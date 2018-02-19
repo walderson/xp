@@ -14,6 +14,11 @@ if (isset($_SESSION['administrador']) && $_SESSION['administrador'] == 1) {
 <a href="?operacao=pesquisarAvaliacao" title="Pesquisar Avaliações geradas">[Pesquisar Avaliação]</a><br/>
 <a href="?operacao=matrizCompetencias" title="Visualizar Matriz de Competências">[Matriz Competências]</a><br/>
 <?php
+} else if (isset($_SESSION['gestor']) && count($_SESSION['gestor']) > 0) {
+?>
+<a href="?operacao=estruturaUO" title="Visualizar Estrutura Organizacional">[Organograma]</a><br/>
+<a href="?operacao=matrizCompetencias" title="Visualizar Matriz de Competências">[Matriz Competências]</a><br/>
+<?php
 }
 ?>
 <a href="?operacao=minhasAvaliacoes" title="Listar as Avaliações existentes">[Minhas Avaliações]</a><br/>

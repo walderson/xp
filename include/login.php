@@ -4,6 +4,7 @@ unset($_SESSION['usuarioId']);
 unset($_SESSION['login']);
 unset($_SESSION['usuario']);
 unset($_SESSION['administrador']);
+unset($_SESSION['gestor']);
 ?>
 <form name="frm" action="?operacao=loginAction" method="POST">
 <table border="0" width="1200">

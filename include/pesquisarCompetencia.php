@@ -82,7 +82,7 @@ if (isset($_POST["acao"])) {
     <th style="background-color: #336699; color: #ffffff;" width="80">Ação</th>
   </tr>
 <?php
-  $sql = "SELECT c.hash, uo.sigla uo, c.ordem, c.sigla, c.competencia, c.replicar, c.ativo
+  $sql = "SELECT c.hash, uo.sigla uo, c.ordem, c.sigla, c.competencia, c.descricao, c.replicar, c.ativo
           FROM
             xp.competencia c
 			inner join xp.uo uo on (c.uo_id = uo.id)
@@ -133,11 +133,11 @@ if (isset($_POST["acao"])) {
   <tr class="pesquisa">
     <td><?php echo $row["uo"]; ?></td>
     <td style="text-align: center;"><?php echo $row["ordem"]; ?></td>
-    <td>
+    <td title="<?php echo $row["descricao"]; ?>">
       <?php if ($row["replicar"] == 1) { ?><img src="image/structure.png" title="Replica para as UOs subordinadas" height="16" width="18"><?php } ?>
       <?php echo $row["sigla"]; ?> - <?php echo $row["competencia"]; ?>
     </td>
-    <td><?php echo $row["ativo"] == 1 ? "Ativo" : "Inativo"; ?></td>
+    <td style="text-align: center;"><?php echo $row["ativo"] == 1 ? "Ativo" : "Inativo"; ?></td>
     <td style="text-align: center">
       <a href="?operacao=visualizarCompetencia&id=<?php echo $row["hash"]; ?>"><img src="image/magnifier.png" title="Visualizar" height="16" width="16"></a>
       <a href="?operacao=alterarCompetencia&id=<?php echo $row["hash"]; ?>"><img src="image/pencil.png" title="Alterar" height="16" width="16"></a>
@@ -149,7 +149,7 @@ if (isset($_POST["acao"])) {
   } else {
 ?>
   <tr class="pesquisa">
-    <td colspan="4">Nenhum registro encontrado.</td>
+    <td colspan="5">Nenhum registro encontrado.</td>
   </tr>
 <?php
   }

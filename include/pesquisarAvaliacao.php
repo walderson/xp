@@ -100,7 +100,7 @@ if (isset($_POST["acao"])) {
           FROM
             xp.avaliacao a
             INNER JOIN xp.usuario u ON (a.usuario_id = u.id)
-            INNER JOIN xp.uo uo ON (u.uo_id = uo.id)
+            INNER JOIN xp.uo uo ON (a.uo_id = uo.id)
           WHERE 1 = 1 ";
   $trimestre = "";
   $uo = "";

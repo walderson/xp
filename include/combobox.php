@@ -14,15 +14,17 @@ function combobox($name, $conn, $table, $id, $value, $selectedId, $required) {
   <option value="">-- Selecione --</option>
 <?php
     while ($row = $result->fetch_assoc()) {
-      if ($selectedId != null && $selectedId == $row["id"]) {
+      if ($selectedId != null && $selectedId == $row["id"])
+        $selected = " selected";
+      else
+        $selected = "";
+      if ($id != $value)
+        $option = $row[$id] . " - " . $row[$value];
+      else
+        $option = $row[$id];
 ?>
-  <option value="<?php echo $row["hash"]; ?>" selected><?php echo $row[$id]; ?> - <?php echo $row[$value]; ?></option>
+  <option value="<?php echo $row["hash"]; ?>"<?php echo $selected; ?>><?php echo $option; ?></option>
 <?php
-      } else {
-?>
-  <option value="<?php echo $row["hash"]; ?>"><?php echo $row[$id]; ?> - <?php echo $row[$value]; ?></option>
-<?php
-      }
     }
 ?>
 </select>
