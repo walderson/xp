@@ -26,13 +26,13 @@
     switch ($_GET['operacao']) {
       case "login":
       case "loginAction":
-	  case "logout":
-	  case "redefinirSenha":
-	  case "redefinirSenhaAction":
-	  case "avaliacao":
-	  case "avaliacaoForm":
-	  case "avaliacaoAction":
-	    $acessoDireto = true;
+      case "logout":
+      case "redefinirSenha":
+      case "redefinirSenhaAction":
+      case "avaliacao":
+      case "avaliacaoForm":
+      case "avaliacaoAction":
+        $acessoDireto = true;
         break;
     }
   }
@@ -252,11 +252,12 @@
           default:
             include 'include/home.php';
         }
-	  } else {
+      } else {
         include 'include/home.php';
-	  }
+      }
     } else {
-      $msgErro = "Sessão expirada ou login não efetuado.\n\nFavor autenticar-se.";
+      if (isset($_GET['operacao']))
+        $msgErro = "Sessão expirada ou login não efetuado.\n\nFavor autenticar-se.";
       include 'include/login.php';
     }
   }
